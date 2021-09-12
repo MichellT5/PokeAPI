@@ -76,31 +76,30 @@ export default {
             show: '10',
         };
     },
-    emits: ['performSearch'],
+    emits: ['search'],
     methods: {
         updateSearch() {
             let base = "https://pokeapi.co/api/v2/",
-                expect = 'multi',
                 link = '',
                 limit = this.show > 0 ? '?limit=' + this.show : '';
                 if (this.searchBy == 'type') {
-                    expect = 'multi';
                     link = `${base}type/${this.type}/${limit}`
                 } else if (this.searchBy == 'name') {
-                    expect = 'single';
-                    link = `${base}pokemon/${this.name.toLowerCase().trim()}/${limit}`;
+                    link = `${base}pokemon/${this.name.toLowerCase().trim()}`;
+                } else if (this.searchBy == 'id') {
+                    link = `${base}pokemon/${this.name.trim()}`;
                 }
-            this.$emit('performSearch', {
+            this.$emit('search', {
                 url: link,
-                result: expect,
+                limit: this.show,
                 searchBy: this.searchBy,
             })
         },
     },
     mounted() {
-        this.$emit('performSearch', {
+        this.$emit('search', {
             url: 'https://pokeapi.co/api/v2/pokemon?limit=50',
-            searchBy: this.searchBy,
+            searchBy: 'all',
         })
     }
 }

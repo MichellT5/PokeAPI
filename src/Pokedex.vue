@@ -3,7 +3,7 @@
     <div class="bg-dark text-light">
         <div class="container">
             <h1>Pokedex</h1>
-            <poke-search @perform-search="updateDataURL" />
+            <poke-search @search="search" />
             <div class="pokemon-list">
                 <div class="loading-gif" v-if="loading">
                     <img src="./assets/loading.gif" alt="Pokeball Loading...">
@@ -17,11 +17,11 @@
                         <div class="text-center text-danger">The search didn't produce any result.</div>
                     </div>
                 </div>
-                <div class="row" v-else-if="Array.isArray(pokemonResult)">
+                <div class="row" v-else-if="searchType == 'all' || searchType == 'type'">
                     <poke-card v-for="pokemon in pokemonResult" :key="pokemon.name" :pokemon="pokemon"/>
                 </div>
-                <div class="row justify-content-center" v-else-if="pokemonResult">
-                    <poke-card :pokeInfo="pokemonResult" />
+                <div class="row justify-content-center" v-else-if="searchType == 'name' || searchType == 'id'">
+                    <poke-card :pokeData="pokemonResult" />
                 </div>
             </div>
         </div>
@@ -42,20 +42,28 @@ export default {
             loading: true,
             error: false,
             pokemonResult: null,
-            data: {},
-            url: '',
+            searchType: null,
         }
     },
     methods: {
-        search() {
+        search(data) {
             this.showLoading();
-            console.log(this.data.url);
-            fetch(this.data.url)
+            console.log(data.url);
+            fetch(data.url)
             .then(response => response.json())
             .then(json => {
                 console.log(json)
+                if (data.searchBy == 'all') {
+                    this.pokemonResult = json.results;
+                } else if (data.searchBy == 'name' || data.searchBy == 'id') {
+                    this.pokemonResult = json;
+                } else if (data.searchBy == 'type') {
+                    let poke = json.pokemon.slice(0, data.limit).map(p => p = p.pokemon);
+                    console.log(poke);
+                    this.pokemonResult = poke;
+                }
+                this.searchType = data.searchBy;
                 this.loading = false;
-                this.pokemonResult = json.results || json;
             })
             .catch(this.showError);
         },
@@ -72,7 +80,7 @@ export default {
             this.error = true;
             this.loading = false;
             if (error) console.error(error);
-        }
+        },
     },
     mounted: function() {
     }

@@ -8,7 +8,7 @@
                         <img v-show="imageLoaded" @load="swapImage" ref="image">
                     </div>
                     <div class="poke-info">
-                        <h4 class="poke-name">{{ pokemon.name ?? '???' }}</h4>
+                        <h4 class="poke-name" v-if="pokeInfo">{{ pokeInfo.species.name }}</h4>
                         <div class="type-list" >
                             <div v-if="loading">Loading types...</div>
                             <div v-else-if="error">
@@ -31,11 +31,11 @@ export default {
     props: {
         pokemon: {
             type: Object,
-            default: null,
+            default: () => { return {}; },
         },
         pokeData: {
             type: Object,
-            default: null,
+            default: () => { return {}; },
         }
     },
     data() {
@@ -67,15 +67,14 @@ export default {
             .then(this.showPokemonInfo)
             .catch(this.showError);
         },
-        showPokemonInfo(pokemon) {
-            this.$refs['image'].src = pokemon.sprites.front_default;
-            this.pokeInfo = pokemon;
+        showPokemonInfo(pokemonInfo) {
+            console.log(pokemonInfo);
+            this.$refs['image'].src = pokemonInfo.sprites.front_default;
+            this.pokeInfo = pokemonInfo;
         },
     },
     mounted: function() {
-        if (this.pokeData) {
-            this.showPokemonInfo(this.pokeData);
-        }
+        if (this.pokeData.name) this.showPokemonInfo(this.pokeData);
         else this.fetchInfo();
     },
 };
