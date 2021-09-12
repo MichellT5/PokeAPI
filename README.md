@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # PokeAPI
-Project using vue.js to imitate the functionality of a Pokedex
-=======
-# pokeapi
 
 ## Project setup
 ```
@@ -26,4 +22,3 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
->>>>>>> 42a0387 (init)
