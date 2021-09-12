@@ -1,4 +1,4 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import Pokedex from "./Pokedex.vue";
 
-createApp(App).mount("#app");
+createApp(Pokedex).mount("#app");
