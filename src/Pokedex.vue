@@ -1,5 +1,4 @@
 <template>
-  <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
     <div class="bg-dark text-light">
         <div class="container">
             <h1>Pokedex</h1>
@@ -18,31 +17,38 @@
                     </div>
                 </div>
                 <div class="row" v-else-if="searchType == 'all' || searchType == 'type'">
-                    <poke-card v-for="pokemon in pokemonResult" :key="pokemon.name" :pokemon="pokemon"/>
+                    <poke-card @open-modal="showPokeModal" v-for="pokemon in pokemonResult" :key="pokemon.name" :pokemon="pokemon"/>
                 </div>
                 <div class="row justify-content-center" v-else-if="searchType == 'name' || searchType == 'id'">
-                    <poke-card :pokeData="pokemonResult" />
+                    <poke-card @open-modal="showPokeModal" :pokeData="pokemonResult" />
                 </div>
             </div>
         </div>
     </div>
+    <template v-if="showModal">
+        <poke-modal :pokemon="pokemonModal" @close-modal="closePokeModal" />
+    </template>
 </template>
 
 <script>
 import PokeCard from './components/PokeCard.vue';
 import PokeSearch from './components/PokeSearch.vue';
+import PokeModal from './components/PokeModal.vue';
 export default {
     name: "Pokedex",
     components: {
         PokeCard,
         PokeSearch,
+        PokeModal,
     },
     data() {
         return {
             loading: true,
             error: false,
+            showModal: false,
             pokemonResult: null,
             searchType: null,
+            pokemonModal: null,
         }
     },
     methods: {
@@ -73,6 +79,7 @@ export default {
             this.search();
         },
         showLoading() {
+            this.showModal = false;
             this.loading = true;
             this.error = false;
         },
@@ -81,8 +88,14 @@ export default {
             this.loading = false;
             if (error) console.error(error);
         },
+        showPokeModal(pokemon) {
+            this.pokemonModal = pokemon;
+            this.showModal = true;
+        },
+        closePokeModal() {
+            this.showModal = false;
+            this.PokeModal = null;
+        },
     },
-    mounted: function() {
-    }
 };
 </script>

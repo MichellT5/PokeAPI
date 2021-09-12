@@ -79,28 +79,34 @@ export default {
     emits: ['search'],
     methods: {
         updateSearch() {
-            let base = "https://pokeapi.co/api/v2/",
-                link = '',
-                limit = this.show > 0 ? '?limit=' + this.show : '';
-                if (this.searchBy == 'type') {
-                    link = `${base}type/${this.type}/${limit}`
-                } else if (this.searchBy == 'name') {
-                    link = `${base}pokemon/${this.name.toLowerCase().trim()}`;
-                } else if (this.searchBy == 'id') {
-                    link = `${base}pokemon/${this.name.trim()}`;
-                }
-            this.$emit('search', {
-                url: link,
-                limit: this.show,
-                searchBy: this.searchBy,
-            })
+            if (this.name.trim() == "" && this.searchBy != 'type') this.searchMany();
+            else {
+                let base = "https://pokeapi.co/api/v2/",
+                    link = '',
+                    limit = this.show > 0 ? '?limit=' + this.show : '';
+                    if (this.searchBy == 'type') {
+                        link = `${base}type/${this.type}/${limit}`
+                    } else if (this.searchBy == 'name') {
+                        link = `${base}pokemon/${this.name.toLowerCase().trim()}`;
+                    } else if (this.searchBy == 'id') {
+                        link = `${base}pokemon/${this.name.trim()}`;
+                    }
+                this.$emit('search', {
+                    url: link,
+                    limit: this.show,
+                    searchBy: this.searchBy,
+                })
+            }
         },
+        searchMany() {
+            this.$emit('search', {
+                url: 'https://pokeapi.co/api/v2/pokemon?limit=50',
+                searchBy: 'all',
+            });
+        }
     },
     mounted() {
-        this.$emit('search', {
-            url: 'https://pokeapi.co/api/v2/pokemon?limit=50',
-            searchBy: 'all',
-        })
+        this.searchMany();
     }
 }
 </script>

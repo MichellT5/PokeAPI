@@ -1,6 +1,6 @@
 <template>
     <div class="col-12 col-md-6 col-lg-4 col-xxl-3 px-2 my-2">
-        <div class="card" :class="{loading: loading, error: error}">
+        <div class="card" :class="{loading: loading, error: error}" @click="sendOpenModal">
             <div class="card-body">
                 <div class="pokemon-card d-flex">
                     <div class="poke-img">
@@ -28,6 +28,7 @@
 <script>
 export default {
     name: "PokeCard",
+    emits: ['openModal'],
     props: {
         pokemon: {
             type: Object,
@@ -68,9 +69,13 @@ export default {
             .catch(this.showError);
         },
         showPokemonInfo(pokemonInfo) {
-            console.log(pokemonInfo);
             this.$refs['image'].src = pokemonInfo.sprites.front_default;
             this.pokeInfo = pokemonInfo;
+        },
+        sendOpenModal() {
+            if (this.imageLoaded) {
+                this.$emit('openModal', this.pokeInfo);
+            }
         },
     },
     mounted: function() {
@@ -83,7 +88,8 @@ export default {
 .card {
     color: #1d1d1d;
     height: 100%;
-    &.loading { background: #b9b9ff; }
-    &.error { background: #ffa9a9; }
+    cursor: pointer;
+    &.loading { background: #b9b9ff; cursor: initial; }
+    &.error { background: #ffa9a9; cursor: initial; }
 }
 </style>
