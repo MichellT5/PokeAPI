@@ -30,7 +30,7 @@
     </template>
 </template>
 
-<script>
+<script lang="ts">
 import PokeCard from './components/PokeCard.vue';
 import PokeSearch from './components/PokeSearch.vue';
 import PokeModal from './components/PokeModal.vue';
