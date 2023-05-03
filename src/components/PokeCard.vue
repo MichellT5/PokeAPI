@@ -1,104 +1,52 @@
 <template>
-    <div class="col-12 col-md-6 col-lg-4 col-xxl-3 px-2 my-2">
-        <div class="card" :class="{ loading: loading, error: error }" @click="sendOpenModal">
-            <div class="card-body">
-                <div class="pokemon-card d-flex">
-                    <div class="poke-img">
-                        <img v-if="!imageLoaded" src="../assets/ditto-sprite.png">
-                        <img v-show="imageLoaded" @load="swapImage" ref="image">
-                    </div>
-                    <div class="poke-info">
-                        <h4 class="poke-name" v-if="pokeInfo">{{ pokeInfo.species.name }}</h4>
-                        <div class="type-list">
-                            <div v-if="loading">Loading types...</div>
-                            <div v-else-if="error">
-                                <p>There was an error with your request...</p>
-                                <button class="btn btn-primary" @click="fetchInfo()">Reload...</button>
-                            </div>
-                            <span v-else v-for="type in pokeInfo.types" :key="type.slot" class="type"
-                                :class="['type-' + type.type.name]">{{ type.type.name }}</span>
-                        </div>
-                    </div>
-                    <span class="poke-id" v-if="pokeInfo">#{{ pokeInfo.id }}</span>
+    <div class="relative rounded bg-zinc-200 p-3 text-black">
+        <span class="absolute bottom-1 right-2" v-if="pokemonData">#{{ pokemonData.id.toString().padStart(3, '0') }}</span>
+        <div class="flex items-start gap-2">
+            <img class="flex-none rounded-full bg-white" v-if="!imageLoaded"
+                src="../assets/ditto-sprite.png" :alt="name">
+            <img class="flex-none rounded-full bg-white" v-if="pokemonData" v-show="imageLoaded"
+                :src="pokemonData.sprites.front_default" @load="imageLoaded = true" :alt="name">
+            <div class="flex-1">
+                <h3 class="text-xl">{{ name }}</h3>
+                <template v-if="loading">
+                    <i class="fa-solid fa-spin fa-spinner"></i>
+                    <span class="text-sm">Loading Info</span>
+                </template>
+                <div v-else-if="pokemonData?.types" class="flex flex-wrap mt-5 gap-2">
+                    <span class="drop-shadow-md rounded-full w-[10ch] uppercase font-mono text-center text-white"
+                        :class="[`bg-${type.name}`]" v-for="{ type } in pokemonData.types" :key="type.name">{{ type.name
+                        }}</span>
                 </div>
             </div>
         </div>
     </div>
 </template>
 
-<script lang="ts">
-export default {
-    name: "PokeCard",
-    emits: ['openModal'],
-    props: {
-        pokemon: {
-            type: Object,
-            default: () => { return {}; },
-        },
-        pokeData: {
-            type: Object,
-            default: () => { return {}; },
-        }
-    },
-    data() {
-        return {
-            loading: true,
-            error: false,
-            pokeInfo: null,
-            imageLoaded: false,
-        };
-    },
-    methods: {
-        showLoading() {
-            this.loading = true;
-            this.error = false;
-        },
-        showError(error) {
-            this.error = true;
-            this.loading = false;
-            if (error) console.error(error);
-        },
-        swapImage() {
-            this.imageLoaded = true;
-            this.loading = false;
-        },
-        fetchInfo() {
-            this.showLoading();
-            fetch(this.pokemon.url)
-                .then(result => result.json())
-                .then(this.showPokemonInfo)
-                .catch(this.showError);
-        },
-        showPokemonInfo(pokemonInfo) {
-            this.$refs['image'].src = pokemonInfo.sprites.front_default;
-            this.pokeInfo = pokemonInfo;
-        },
-        sendOpenModal() {
-            if (this.imageLoaded) {
-                this.$emit('openModal', this.pokeInfo);
-            }
-        },
-    },
-    mounted: function () {
-        if (this.pokeData.name) this.showPokemonInfo(this.pokeData);
-        else this.fetchInfo();
-    },
-};
+<script setup lang="ts">
+import { PropType, Ref, computed, onBeforeMount, ref } from 'vue';
+import { PokeSearchResult, Pokemon } from '../types';
+import pokemonStoreDefinition from '../store/pokemon';
+
+const pokemonData: Ref<Pokemon | undefined> = ref()
+const pokemonStore = pokemonStoreDefinition()
+const loading = ref(false)
+const imageLoaded = ref(false)
+
+const props = defineProps({
+    pokemon: Object as PropType<PokeSearchResult>
+})
+
+const name = computed(() => props.pokemon?.name
+    ? props.pokemon?.name[0].toLocaleUpperCase() + props.pokemon?.name.slice(1)
+    : undefined)
+
+onBeforeMount(async () => {
+    loading.value = true;
+    const name = props.pokemon?.name
+    if (name) {
+        const poke = await pokemonStore.getPokemonByName(name)
+        if (poke) pokemonData.value = poke;
+    }
+    loading.value = false;
+})
 </script>
-<style scope lang="scss">
-.card {
-    color: #1d1d1d;
-    height: 100%;
-    cursor: pointer;
-
-    &.loading {
-        background: #b9b9ff;
-        cursor: initial;
-    }
-
-    &.error {
-        background: #ffa9a9;
-        cursor: initial;
-    }
-}
-</style>
