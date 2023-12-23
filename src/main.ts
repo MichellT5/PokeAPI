@@ -1,10 +1,14 @@
-import "./styles/style.scss"
-import "./styles/style.css"
-import "@fortawesome/fontawesome-free/css/all.min.css"
+import './assets/main.css'
 
 import { createApp } from 'vue'
-import Pokedex from './Pokedex.vue'
-import { createPinia } from "pinia"
-createApp(Pokedex)
-    .use(createPinia())
-    .mount('#app')
+import { createPinia } from 'pinia'
+
+import App from './App.vue'
+import router from './router'
+
+const app = createApp(App)
+
+app.use(createPinia())
+app.use(router)
+
+app.mount('#app')
