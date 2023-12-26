@@ -5,11 +5,11 @@
                 {{ localPoke?.name ?? poke.name }}
             </div>
             <div class="flex-none rounded-full max-w-[12rem] bg-zinc-200">
-                <img v-show="!imageLoaded" src="../assets/ditto-sprite.png" alt="Ditto">
+                <!-- <img v-show="!imageLoaded" src="../assets/ditto-sprite.png" alt="Ditto">
                 <template v-if="localPoke">
                     <img v-show="imageLoaded" :src="localPoke.sprites.front_default" :alt="localPoke.name"
                         @load="imageLoaded = true">
-                </template>
+                </template> -->
             </div>
         </div>
     </div>

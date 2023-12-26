@@ -47,9 +47,12 @@ export const usePokemonStore = defineStore('pokemon', () => {
     return poke
   }
 
-  const fetchAllPokemon = async (data: { page?: number; limit?: number }): PokeSearchResult[] => {
-    const { page, limit } = { ...{ page: 1, limit: 15 }, ...data }
-    const pokemon = await axios
+  const fetchAllPokemon = async (data: {
+    page?: number
+    limit?: number
+  }): Promise<{ pokemon: PokeSearchResult[]; total: number }> => {
+    const { page, limit } = { page: 1, limit: 15, ...data }
+    const { results: pokemon, count: total } = await axios
       .get('https://pokeapi.co/api/v2/pokemon-species/', {
         params: {
           limit,
@@ -57,8 +60,7 @@ export const usePokemonStore = defineStore('pokemon', () => {
         }
       })
       .then((res) => res.data)
-
-    return pokemon.results
+    return { pokemon, total }
   }
 
   return { pokemonList, fetchPokemon, fetchAllPokemon }

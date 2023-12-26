@@ -5,6 +5,7 @@
       <div class="grid gap-3 lg:grid-cols-5 capitalize">
         <pokeCard v-for="p in poke" :key="p.name" :poke="p" />
       </div>
+      <paginationIndex v-if="total > 0" :key="JSON.stringify(pagination)" :data="pagination" />
       <!-- <select class="text-black" v-model="limit" @change="limitChanged">
         <option v-for="val in limitValues" :key="val" :value="val">{{ val }} Pokemon</option>
       </select> -->
@@ -19,18 +20,34 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, reactive } from 'vue';
-import { usePokemonStore } from '../stores/pokemon';
-import { PokeSearchResult } from '../types';
-import pokeCard from '../components/pokeCard.vue';
+import { onBeforeMount, reactive, computed, ref, watchEffect } from 'vue'
+import { usePokemonStore } from '../stores/pokemon'
+import { PokeSearchResult } from '../types'
+import pokeCard from '../components/pokeCard.vue'
+import paginationIndex, { PaginationData } from '../components/paginationIndex.vue'
+import { useRouter } from 'vue-router'
+interface fetchParams { page?: number, limit?: number }
 
 /* Data */
-const poke = reactive<PokeSearchResult[]>([]);
-
+const router = useRouter()
+const total = ref(0)
+const poke = reactive<PokeSearchResult[]>([])
+const pagination = computed((): PaginationData => {
+  const { limit, page } = router.currentRoute.value.query
+  return { limit: +(limit ?? 30), page: +(page ?? 1), total: total.value || 0 }
+})
 /* Methods */
+const fetch = async (data: fetchParams) => {
+  const { page, limit } = data;
+  const { pokemon, total: t } = await usePokemonStore().fetchAllPokemon({ page, limit })
+  total.value = t
+  poke.length = 0
+  poke.push(...pokemon)
+}
 
 /* Hooks */
-onBeforeMount(async () => {
-  poke.push(...(await usePokemonStore().fetchAllPokemon({ page:7, limit: 30 })));
+watchEffect(() => {
+  const data = { page: 1, limit: 30, ...router.currentRoute.value.query }
+  fetch(data);
 });
 </script>
