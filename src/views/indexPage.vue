@@ -34,7 +34,7 @@ const total = ref(0)
 const poke = reactive<PokeSearchResult[]>([])
 const pagination = computed((): PaginationData => {
   const { limit, page } = router.currentRoute.value.query
-  return { limit: +(limit ?? 36), page: +(page ?? 1), total: total.value || 0, route: { path: '/' } }
+  return { limit: +(limit ?? 24), page: +(page ?? 1), total: total.value || 0, route: { path: '/' } }
 })
 /* Methods */
 const fetch = async (data: fetchParams) => {
@@ -47,7 +47,7 @@ const fetch = async (data: fetchParams) => {
 
 /* Hooks */
 watchEffect(() => {
-  const data = { page: 1, limit: 36, ...router.currentRoute.value.query }
+  const data = { page: 1, limit: 24, ...router.currentRoute.value.query }
   fetch(data);
 });
 </script>

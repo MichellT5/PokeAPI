@@ -3,25 +3,29 @@
         <div class="flex items-start">
             <div class="grid gap-2 grow">
                 {{ localPoke?.name ?? poke.name }}
-                <div class="flex flex-wrap gap-2 font-mono">
-                    <div v-if="!imageLoaded" class="rounded-full w-24 bg-zinc-900 text-white text-center">
-                        ???
-                    </div>
-                    <template v-else>
-                        <div v-for="_type in localPoke?.types" :key="_type.slot"
-                            class="rounded-full w-24 bg-[--color] text-white text-center"
-                            :style="['--color: var(--type-' + _type.type.name + ')']">
-                            {{ _type.type.name }}
+                <div class="relative font-mono">
+                    <Transition name="fade">
+                        <div v-if="!imageLoaded"
+                            class="transition duration-500 rounded-full w-24 bg-zinc-900 text-white text-center">
+                            ???
                         </div>
-                    </template>
+                        <div v-else class="transition duration-500 flex flex-wrap gap-2">
+                            <div v-for="_type in localPoke?.types" :key="_type.slot"
+                                class="rounded-full w-24 bg-[--color] text-white text-center"
+                                :style="['--color: var(--type-' + _type.type.name + ')']">
+                                {{ _type.type.name }}
+                            </div>
+                        </div>
+                    </Transition>
                 </div>
             </div>
-            <div class="flex-none rounded-full max-w-[12rem] bg-zinc-200">
-                <img v-show="!imageLoaded" src="../assets/ditto-sprite.png" alt="Ditto">
-                <template v-if="localPoke">
-                    <img v-show="imageLoaded" :src="localPoke.sprites.front_default" :alt="localPoke.name"
-                        @load="delay">
-                </template>
+            <div class="relative flex-none rounded-full max-w-[12rem] bg-zinc-200">
+                <img v-if="localPoke && !imageLoaded" v-show="false" :src="localPoke.sprites.front_default" @load="delay">
+                <Transition name="fade">
+                    <img v-if="!localPoke" class="transition duration-500" src="../assets/ditto-sprite.png" alt="Ditto">
+                    <img v-else class="transition duration-500" :src="localPoke.sprites.front_default"
+                        :alt="localPoke.name">
+                </Transition>
             </div>
         </div>
     </div>
@@ -46,3 +50,16 @@ onBeforeMount(async () => {
     localPoke.value = await pokeStore.fetchPokemon(poke.name)
 })
 </script>
+
+<style>
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fade-enter-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+</style>
