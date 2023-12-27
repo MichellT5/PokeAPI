@@ -2,10 +2,10 @@
   <div class="min-w-screen min-h-screen py-10 px-5 dark:bg-zinc-900 dark:text-white">
     <div class="grid gap-5 2xl:container 2xl:mx-auto">
       <h1 class="text-3xl">Pokedex</h1>
-      <div class="grid gap-3 lg:grid-cols-5 capitalize">
-        <pokeCard v-for="p in poke" :key="p.name" :poke="p" />
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 capitalize">
+        <PokeCard v-for="p in poke" :key="p.name" :poke="p" />
       </div>
-      <paginationIndex v-if="total > 0" :key="JSON.stringify(pagination)" :data="pagination" />
+      <PaginationIndex v-if="total > 0" :key="JSON.stringify(pagination)" :data="pagination" />
       <!-- <select class="text-black" v-model="limit" @change="limitChanged">
         <option v-for="val in limitValues" :key="val" :value="val">{{ val }} Pokemon</option>
       </select> -->
@@ -20,11 +20,11 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, reactive, computed, ref, watchEffect } from 'vue'
+import { reactive, computed, ref, watchEffect } from 'vue'
 import { usePokemonStore } from '../stores/pokemon'
 import { PokeSearchResult } from '../types'
-import pokeCard from '../components/pokeCard.vue'
-import paginationIndex, { PaginationData } from '../components/paginationIndex.vue'
+import PokeCard from '../components/PokeCard.vue'
+import PaginationIndex, { PaginationData } from '../components/paginationIndex.vue'
 import { useRouter } from 'vue-router'
 interface fetchParams { page?: number, limit?: number }
 
@@ -34,7 +34,7 @@ const total = ref(0)
 const poke = reactive<PokeSearchResult[]>([])
 const pagination = computed((): PaginationData => {
   const { limit, page } = router.currentRoute.value.query
-  return { limit: +(limit ?? 30), page: +(page ?? 1), total: total.value || 0 }
+  return { limit: +(limit ?? 36), page: +(page ?? 1), total: total.value || 0, route: { path: '/' } }
 })
 /* Methods */
 const fetch = async (data: fetchParams) => {
@@ -47,7 +47,7 @@ const fetch = async (data: fetchParams) => {
 
 /* Hooks */
 watchEffect(() => {
-  const data = { page: 1, limit: 30, ...router.currentRoute.value.query }
+  const data = { page: 1, limit: 36, ...router.currentRoute.value.query }
   fetch(data);
 });
 </script>
