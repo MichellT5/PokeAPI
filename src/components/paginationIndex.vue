@@ -1,11 +1,11 @@
 <template>
     <div class="flex justify-center">
         <div class="overflow-hidden flex rounded">
-            <RouterLink class="border-l p-2 border-blue-300 bg-blue-900 first:border-l-0" :to="firstPage">First</RouterLink>
-            <RouterLink class="border-l p-2 border-blue-300 bg-blue-900 first:border-l-0" :to="previousPage">Previous
+            <RouterLink class="border-dotted border-l p-2 bg-blue-900 first:border-l-0" :to="firstPage">First</RouterLink>
+            <RouterLink class="border-dotted border-l p-2 bg-blue-900 first:border-l-0" :to="previousPage">Previous
             </RouterLink>
-            <RouterLink class="border-l p-2 border-blue-300 bg-blue-900 first:border-l-0" :to="nextPage">Next</RouterLink>
-            <RouterLink class="border-l p-2 border-blue-300 bg-blue-900 first:border-l-0" :to="lastPage">Last</RouterLink>
+            <RouterLink class="border-dotted border-l p-2 bg-blue-900 first:border-l-0" :to="nextPage">Next</RouterLink>
+            <RouterLink class="border-dotted border-l p-2 bg-blue-900 first:border-l-0" :to="lastPage">Last</RouterLink>
         </div>
     </div>
 </template>

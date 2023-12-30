@@ -20,9 +20,11 @@
                 </div>
             </div>
             <div class="relative flex-none rounded-full max-w-[12rem] bg-zinc-200">
-                <img v-if="localPoke && !imageLoaded" v-show="false" :src="localPoke.sprites.front_default" @load="delay">
+                <img v-if="localPoke && !imageLoaded" v-show="false" :src="localPoke.sprites.front_default"
+                    @load="showImage">
                 <Transition name="fade">
-                    <img v-if="!localPoke" class="transition duration-500" src="../assets/ditto-sprite.png" alt="Ditto">
+                    <img v-if="!localPoke || !imageLoaded" class="transition duration-500" src="../assets/ditto-sprite.png"
+                        alt="Ditto">
                     <img v-else class="transition duration-500" :src="localPoke.sprites.front_default"
                         :alt="localPoke.name">
                 </Transition>
@@ -41,9 +43,9 @@ const { poke } = defineProps<{ poke: PokeSearchResult }>()
 const localPoke = ref<Pokemon>()
 const imageLoaded = ref(false)
 
-const delay = async () => {
-    await (new Promise(res => setTimeout(res, Math.random() * 1000)))
-    imageLoaded.value = true
+const showImage = () => {
+    if (localPoke.value?.sprites.front_default)
+        imageLoaded.value = true;
 }
 
 onBeforeMount(async () => {
