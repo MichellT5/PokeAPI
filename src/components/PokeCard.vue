@@ -5,7 +5,7 @@
                 {{ localPoke?.name ?? poke.name }}
                 <div class="relative font-mono">
                     <Transition name="fade">
-                        <div v-if="!imageLoaded"
+                        <div v-if="!infoLoaded"
                             class="transition duration-500 rounded-full w-24 bg-zinc-900 text-white text-center">
                             ???
                         </div>
@@ -20,8 +20,6 @@
                 </div>
             </div>
             <div class="relative flex-none rounded-full max-w-[12rem] bg-zinc-200">
-                <img v-if="localPoke && !imageLoaded" v-show="false" :src="localPoke.sprites.front_default"
-                    @load="showImage">
                 <Transition name="fade">
                     <img v-if="!localPoke || !imageLoaded" class="transition duration-500" src="../assets/ditto-sprite.png"
                         alt="Ditto">
@@ -42,14 +40,14 @@ const pokeStore = usePokemonStore()
 const { poke } = defineProps<{ poke: PokeSearchResult }>()
 const localPoke = ref<Pokemon>()
 const imageLoaded = ref(false)
-
-const showImage = () => {
-    if (localPoke.value?.sprites.front_default)
-        imageLoaded.value = true;
-}
+const infoLoaded = ref(false)
 
 onBeforeMount(async () => {
     localPoke.value = await pokeStore.fetchPokemon(poke.name)
+    const img = document.createElement('img')
+    img.addEventListener('load', () => infoLoaded.value = imageLoaded.value = true)
+    img.addEventListener('error', () => infoLoaded.value = true)
+    img.src = localPoke.value?.sprites.front_default || ''
 })
 </script>
 

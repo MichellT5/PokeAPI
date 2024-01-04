@@ -11,12 +11,12 @@
 </template>
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router';
+import { RouteLocationNamedRaw, RouteLocationPathRaw, RouterLink } from 'vue-router';
 export interface PaginationData {
     total: number,
     page: number,
     limit: number,
-    route: { path?: string, name?: string }
+    route: RouteLocationNamedRaw | RouteLocationPathRaw
 }
 /* DATA */
 const { data } = defineProps<{ data: PaginationData }>()
@@ -35,6 +35,8 @@ const nextPage = computed(() => {
 })
 
 const createURL = (page: number) => {
-    return { ...data.route, query: { page, limit: data.limit } }
+    let { query, ...d } = data.route
+    query = { ...query, page }
+    return { ...d, query }
 }
 </script>
